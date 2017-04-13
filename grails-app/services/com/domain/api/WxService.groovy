@@ -18,7 +18,7 @@ class WxService {
                 def jSONObject = new JSONObject(tokenStr)
                 if (jSONObject.has("data")) {
                     def dataJSON = jSONObject.getJSONObject("data")
-                    token = dataJSON.getString("token")
+                    def token = dataJSON.getString("token")
                     if (token != apiAccount.accessToken) {
                         def instance = Calendar.getInstance()
                         instance.add(Calendar.SECOND, 60)
@@ -68,7 +68,6 @@ class WxService {
         wxParam.put("next_openid", nextOpenId ? nextOpenId : "");
         return WxUtils.doAll(WxUtils.WX_USER_GET_URL, wxParam, WxUtils.GET)
     }
-
 
 
 }

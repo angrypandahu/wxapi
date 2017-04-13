@@ -35,7 +35,7 @@ class WxController {
 
     def token() {
         def apiAccount = ApiAccount.load(params.account)
-        render(wxService.token(apiAccount))
+        render(wxService.token(apiAccount).accessToken)
     }
 
 
@@ -122,7 +122,8 @@ class WxController {
         NpWxUserUpdateJob.triggerNow()
         render("job")
     }
-    def toNewGroup(){
+
+    def toNewGroup() {
         def apiAccount = ApiAccount.load(params.account)
         wxGroupService.moveToNewGroup(apiAccount)
     }
