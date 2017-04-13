@@ -126,6 +126,13 @@ class WxController {
     def toNewGroup() {
         def apiAccount = ApiAccount.load(params.account)
         wxGroupService.moveToNewGroup(apiAccount)
+        render("moveToNewGroup")
+    }
+
+    def toOldGroup() {
+        def apiAccount = ApiAccount.load(params.account)
+        wxGroupService.moveToOldGroup(apiAccount)
+        render("moveToOldGroup")
     }
 
 

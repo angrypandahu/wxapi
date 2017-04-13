@@ -4,7 +4,8 @@ import com.abstractpackage.thread.AbstractThread;
 import com.domain.wechat.WxUser;
 import com.domain.wechat.WxUserService;
 import com.util.WxUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.grails.web.json.JSONObject;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 public class WxUserInfoThread extends AbstractThread {
     private List<WxUser> wxUserList;
     private WxUserService wxUserService;
-    private final static Logger log = Logger.getLogger(WxUserInfoThread.class);
+    private static final Log log = LogFactory.getLog(WxUserInfoThread.class);
 
     public WxUserInfoThread(CountDownLatch mStartSignal, CountDownLatch mDoneSignal, int mThreadIndex, List<WxUser> wxUserList, WxUserService wxUserService) {
         super(mStartSignal, mDoneSignal, mThreadIndex);

@@ -1,6 +1,7 @@
 package com.abstractpackage.thread;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -8,7 +9,7 @@ public abstract class AbstractThread extends Thread {
     private CountDownLatch mStartSignal;
     private CountDownLatch mDoneSignal;
     private int mThreadIndex;
-    private final static Logger log = Logger.getLogger(AbstractThread.class);
+    private static final Log log = LogFactory.getLog(AbstractThread.class);
 
     public abstract void doWork();
 

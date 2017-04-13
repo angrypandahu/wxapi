@@ -1,7 +1,8 @@
 package com.util;
 
 import com.domain.wechat.WxUser;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.grails.web.json.JSONObject;
 
 import javax.net.ssl.*;
@@ -34,7 +35,7 @@ public class WxUtils {
     final public static String GET = "GET";
     final public static String POST = "POST";
 
-    private final static Logger log = Logger.getLogger(WxUtils.class);
+    private static final Log log = LogFactory.getLog(WxUtils.class);
 
 
     public static String userInfo(WxUser wxUser) {

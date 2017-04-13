@@ -1,5 +1,7 @@
 package wxapi
 
+import com.domain.api.ApiAccount
+import com.util.WxUtils
 import com.utils.DateUtils
 
 class NpWxUserUpdateJob {
@@ -18,6 +20,7 @@ class NpWxUserUpdateJob {
         npWxUserService.batchSync()
         wxSyncUtils.getAllWxUsers(npApiAccount)
         wxSyncUtils.getWxUserInfo(npApiAccount)
+
         wxGroupService.moveToOldGroup(npApiAccount)
         wxGroupService.moveToNewGroup(npApiAccount)
         println("NpWxUserUpdateJob->End#####" + DateUtils.dateFormat_4.format(new Date()))

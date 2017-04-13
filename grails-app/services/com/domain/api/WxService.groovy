@@ -1,6 +1,5 @@
 package com.domain.api
 
-import com.domain.wechat.WxUser
 import com.util.WxUtils
 import com.utils.DateUtils
 import grails.transaction.Transactional
@@ -24,6 +23,7 @@ class WxService {
                         instance.add(Calendar.SECOND, 60)
                         apiAccount.setExpiresTime(instance.getTime())
                         apiAccount.setAccessToken(token)
+                        apiAccount.merge()
                         apiAccount.save(flush: true)
                     }
 

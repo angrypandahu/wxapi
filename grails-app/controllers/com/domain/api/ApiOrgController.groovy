@@ -24,7 +24,8 @@ class ApiOrgController {
         render MyStringUtils.ajaxJSONReturnTrue(ret);
     }
 
-    def show(ApiOrg apiOrg) {
+    def show() {
+        def apiOrg = apiOrgService.get(params.id)
         respond apiOrg
     }
 

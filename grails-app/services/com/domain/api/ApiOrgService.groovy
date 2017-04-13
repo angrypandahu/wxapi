@@ -103,5 +103,9 @@ class ApiOrgService {
 
     }
 
+    def get(id) {
+        return ApiOrg.get(id)
+    }
+
 
 }
