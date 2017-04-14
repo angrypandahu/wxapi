@@ -18,13 +18,13 @@ public abstract class AbstractThread extends Thread {
     public void run() {
         try {
             mStartSignal.await();//
-            log.info("###########Tread->" + mThreadIndex + "###########StartDoWork");
+            log.debug("###########Tread->" + mThreadIndex + "###########StartDoWork");
             try {
                 doWork();//
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
-            log.info("###########Tread->" + mThreadIndex + "###########EndDoWork");
+            log.debug("###########Tread->" + mThreadIndex + "###########EndDoWork");
             mDoneSignal.countDown();//
         } catch (InterruptedException e) {
             log.error(e.getMessage());

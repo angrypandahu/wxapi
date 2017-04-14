@@ -40,7 +40,7 @@ public class WxUtils {
 
     public static String userInfo(WxUser wxUser) {
         Map<String, String> wxParam = new HashMap<>();
-        wxParam.put("access_token", wxUser.getApiAccount().getAccessToken());
+        wxParam.put("access_token", wxUser.getApiAccount().getApiToken().getAccessToken());
         wxParam.put("openid", wxUser.getOpenid());
         String doAll = null;
         try {

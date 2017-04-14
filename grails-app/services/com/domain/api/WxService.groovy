@@ -9,7 +9,12 @@ import org.grails.web.json.JSONObject
 class WxService {
 
     def npToken() {
+        return npToken(false)
+    }
+
+    def npToken(boolean notSaveToken) {
         def apiAccount = ApiAccount.findByAppId(WxUtils.NP_WX_APP_ID)
+        def token = apiAccount.apiToken.accessToken
         try {
             if (apiAccount) {
                 def wxParam = [:]
@@ -17,14 +22,14 @@ class WxService {
                 def jSONObject = new JSONObject(tokenStr)
                 if (jSONObject.has("data")) {
                     def dataJSON = jSONObject.getJSONObject("data")
-                    def token = dataJSON.getString("token")
-                    if (token != apiAccount.accessToken) {
+                    token = dataJSON.getString("token")
+                    def apiToken = apiAccount.getApiToken()
+                    if (token != apiToken.getAccessToken() && !notSaveToken) {
                         def instance = Calendar.getInstance()
                         instance.add(Calendar.SECOND, 60)
-                        apiAccount.setExpiresTime(instance.getTime())
-                        apiAccount.setAccessToken(token)
-                        apiAccount.merge()
-                        apiAccount.save(flush: true)
+                        apiToken.setExpiresTime(instance.getTime())
+                        apiToken.setAccessToken(token)
+                        apiToken.save(flush: true)
                     }
 
                 }
@@ -34,10 +39,11 @@ class WxService {
         }
 
 
-        return apiAccount
+        return token
     }
 
     def token(ApiAccount apiAccount) {
+        def token = apiAccount.apiToken.accessToken
         def wxParam = [:]
         wxParam.put("appid", apiAccount.appId);
         wxParam.put("secret", apiAccount.secret);
@@ -48,23 +54,25 @@ class WxService {
         def accessToken = WxUtils.doAll(WxUtils.WX_GET_TOKEN_URL, wxParam, WxUtils.GET)
         def jSONObject = new JSONObject(accessToken)
         def date = new Date()
+        def apiToken = apiAccount.getApiToken()
         if (jSONObject) {
             if (jSONObject.has("access_token")) {
-                apiAccount.setAccessToken(jSONObject.getString("access_token"))
+                token = jSONObject.getString("access_token")
+                apiToken.setAccessToken(token)
                 def instance = Calendar.getInstance()
                 instance.setTime(date)
                 instance.add(Calendar.SECOND, jSONObject.getInt("expires_in"))
-                apiAccount.setExpiresTime(instance.getTime())
-                apiAccount.save(flush: true)
+                apiToken.setExpiresTime(instance.getTime())
+                apiToken.save(flush: true)
                 log.info(apiAccount.name + "-> token expiresTime " + DateUtils.dateFormat_4.format(apiAccount.expiresTime))
             }
         }
-        return apiAccount
+        return token
     }
 
     String userGet(ApiAccount apiAccount, String nextOpenId) {
         def wxParam = [:]
-        wxParam.put("access_token", apiAccount.accessToken);
+        wxParam.put("access_token", apiAccount.apiToken.accessToken);
         wxParam.put("next_openid", nextOpenId ? nextOpenId : "");
         return WxUtils.doAll(WxUtils.WX_USER_GET_URL, wxParam, WxUtils.GET)
     }

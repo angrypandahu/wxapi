@@ -7,18 +7,16 @@ import groovy.transform.ToString
 class ApiAccount extends BaseDomain {
     String name
     String type
-    String accessToken
     String appId
     String secret
-    Date expiresTime
     String description
+    ApiToken apiToken
     static constraints = {
         name blank: false
-        type blank: false,inList: ["微信公众号"]
+        type blank: false, inList: ["微信公众号"]
         appId blank: true
         secret blank: true
-        accessToken blank: false
         description nullable: true
-        expiresTime nullable: true
+        apiToken nullable: true
     }
 }

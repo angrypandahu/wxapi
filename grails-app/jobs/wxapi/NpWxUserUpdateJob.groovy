@@ -14,16 +14,23 @@ class NpWxUserUpdateJob {
     }
 
     def execute() {
-        def date = new Date()
-        println("NpWxUserUpdateJob->Start#####" + DateUtils.dateFormat_4.format(date))
-        def npApiAccount = wxService.npToken()
-        npWxUserService.batchSync()
-        wxSyncUtils.getAllWxUsers(npApiAccount)
-        wxSyncUtils.getWxUserInfo(npApiAccount)
+        try {
+            def date = new Date()
+            println("NpWxUserUpdateJob->Start#####" + DateUtils.dateFormat_4.format(date))
+            def npApiAccount = ApiAccount.findByAppId(WxUtils.NP_WX_APP_ID)
+            def token = wxService.npToken(true)
+            npWxUserService.batchSync()
+            wxSyncUtils.getAllWxUsers(npApiAccount)
+            wxSyncUtils.getWxUserInfo(npApiAccount)
 
-        wxGroupService.moveToOldGroup(npApiAccount)
-        wxGroupService.moveToNewGroup(npApiAccount)
-        println("NpWxUserUpdateJob->End#####" + DateUtils.dateFormat_4.format(new Date()))
+            wxGroupService.moveToOldGroup(npApiAccount, token)
+            wxGroupService.moveToNewGroup(npApiAccount, token)
+
+            println("NpWxUserUpdateJob->End#####" + DateUtils.dateFormat_4.format(new Date()))
+        } catch (Exception e) {
+            log.error(e.getMessage())
+        }
+
         // execute job
     }
 

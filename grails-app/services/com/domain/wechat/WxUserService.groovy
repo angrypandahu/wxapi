@@ -38,7 +38,7 @@ class WxUserService {
                 notInDb.add(wxUserList.get(i))
             }
         }
-        log.info("notInDb.size=" + notInDb.size())
+        log.debug("notInDb.size=" + notInDb.size())
         WxUser.withNewTransaction {
             notInDb?.each {
                 it.save(flush: true)
@@ -48,22 +48,22 @@ class WxUserService {
 
     def batchSave(List<WxUser> wxUserList) {
         def begin = new Date()
-        log.info("#########batchSave##begin->" + begin)
+        log.debug("#########batchSave##begin->" + begin)
         def whereQuery = WxUser.where {
             (openid in wxUserList.openid) && (apiAccount == wxUserList.get(0).apiAccount)
         }
         def existsUsers = whereQuery.findAll()
         mergeSave(wxUserList, existsUsers)
-        log.info(existsUsers.id.toString())
+        log.debug(existsUsers.id.toString())
         def end = new Date()
         def time = (end.getTime() - begin.getTime()) / 1000
-        log.info("#########batchSave##end->" + end)
-        log.info("#########batchSave[total:" + wxUserList.size() + ",time:" + time + "]")
+        log.debug("#########batchSave##end->" + end)
+        log.debug("#########batchSave[total:" + wxUserList.size() + ",time:" + time + "]")
     }
 
     def batchUpdate(List<WxUser> wxUserList) {
         def begin = new Date()
-        log.info("#########batchUpdate##begin->" + begin)
+        log.debug("#########batchUpdate##begin->" + begin)
         WxUser.withNewTransaction {
             wxUserList?.each {
                 it.save(flush: true)
@@ -71,8 +71,8 @@ class WxUserService {
         }
         def end = new Date()
         def time = (end.getTime() - begin.getTime()) / 1000
-        log.info("#########batchUpdate##end->" + end)
-        log.info("#########batchUpdate[total:" + wxUserList.size() + ",time:" + time + "]")
+        log.debug("#########batchUpdate##end->" + end)
+        log.debug("#########batchUpdate[total:" + wxUserList.size() + ",time:" + time + "]")
     }
 
     def userInfo(JSONObject jSONObject, WxUser wxUser) {
@@ -108,7 +108,7 @@ class WxUserService {
     def customSend(WxUser wxUser, String msg) {
         def apiAccount = wxUser.apiAccount
         def wxParam = [:]
-        wxParam.put("access_token", apiAccount.accessToken);
+        wxParam.put("access_token", apiAccount.apiToken.accessToken);
         def object = new JSONObject();
         object.put("touser", wxUser.openid)
         object.put("msgtype", "text")

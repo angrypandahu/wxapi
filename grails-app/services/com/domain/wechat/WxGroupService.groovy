@@ -2,7 +2,6 @@ package com.domain.wechat
 
 import com.domain.api.ApiAccount
 import com.util.WxUtils
-import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
@@ -14,7 +13,7 @@ class WxGroupService {
     def getWxGroup(ApiAccount apiAccount) {
         if (apiAccount) {
             def wxParam = [:]
-            wxParam.put("access_token", apiAccount.accessToken);
+            wxParam.put("access_token", apiAccount.apiToken.accessToken);
             def groupGet = WxUtils.doAll(WxUtils.WX_GROUP_GET_URL, wxParam, WxUtils.GET)
             def jSONObject = new JSONObject(groupGet)
             if (jSONObject.has("groups")) {
@@ -84,7 +83,7 @@ class WxGroupService {
     def wxGroupUserUpdate(WxUser wxUser, WxGroup toGroup) {
         def wxParam = [:]
         def apiAccount = wxUser.apiAccount
-        wxParam.put("access_token", apiAccount.accessToken);
+        wxParam.put("access_token", apiAccount.apiToken.accessToken);
         def postData = new JSONObject()
         postData.put("openid", wxUser.getOpenid())
         postData.put("to_groupid", toGroup.getWxId())
@@ -101,7 +100,7 @@ class WxGroupService {
     def createWxGroup(WxGroup wxGroup) {
         def wxParam = [:]
         def apiAccount = wxGroup.apiAccount
-        wxParam.put("access_token", apiAccount.accessToken);
+        wxParam.put("access_token", apiAccount.apiToken.accessToken);
         def postData = new JSONObject()
         def group = new JSONObject()
         group.put("id", wxGroup.getWxId())
@@ -111,18 +110,6 @@ class WxGroupService {
         return jSONObject
     }
 
-    def updateWxGroup(WxGroup wxGroup) {
-        def wxParam = [:]
-        def apiAccount = wxGroup.apiAccount
-        wxParam.put("access_token", apiAccount.accessToken);
-        def postData = new JSONObject()
-        def group = new JSONObject()
-        group.put("id", wxGroup.getWxId())
-        group.put("name", wxGroup.getName())
-        postData.put("group", group)
-        def jSONObject = new JSONObject(WxUtils.doAll(WxUtils.WX_GROUP_UPDATE_URL, wxParam, WxUtils.POST, postData))
-        return jSONObject
-    }
 
     int batchMove(WxGroup fromGroup, WxGroup toGroup, String accessToken) {
         int limit = 50;
@@ -149,16 +136,14 @@ class WxGroupService {
         return 0;
     }
 
-    def moveToNewGroup(ApiAccount apiAccount) {
-        String accessToken = apiAccount.accessToken
+    def moveToNewGroup(ApiAccount apiAccount,String accessToken) {
         def fromWxGroup = WxGroup.findByNameAndApiAccount("未分组", apiAccount)
         def toWxGroup = WxGroup.findByNameAndApiAccount("新用户", apiAccount)
         batchMove(fromWxGroup, toWxGroup, accessToken)
 
     }
 
-    def moveToOldGroup(ApiAccount apiAccount) {
-        String token = apiAccount.accessToken
+    def moveToOldGroup(ApiAccount apiAccount,String token) {
         def openidList = NpWxUser.findAll().openid
         def wxGroup = WxGroup.findByNameAndApiAccount("老用户", apiAccount)
         def wxUsers = WxUser.findAllByUnionidInListAndWxGroupNotEqual(openidList, wxGroup)

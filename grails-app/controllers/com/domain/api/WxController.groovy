@@ -35,7 +35,7 @@ class WxController {
 
     def token() {
         def apiAccount = ApiAccount.load(params.account)
-        render(wxService.token(apiAccount).accessToken)
+        render(wxService.token(apiAccount))
     }
 
 
@@ -125,13 +125,13 @@ class WxController {
 
     def toNewGroup() {
         def apiAccount = ApiAccount.load(params.account)
-        wxGroupService.moveToNewGroup(apiAccount)
+        wxGroupService.moveToNewGroup(apiAccount, apiAccount.apiToken.accessToken)
         render("moveToNewGroup")
     }
 
     def toOldGroup() {
         def apiAccount = ApiAccount.load(params.account)
-        wxGroupService.moveToOldGroup(apiAccount)
+        wxGroupService.moveToOldGroup(apiAccount, apiAccount.apiToken.accessToken)
         render("moveToOldGroup")
     }
 
