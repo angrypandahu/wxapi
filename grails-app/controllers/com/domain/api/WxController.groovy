@@ -5,8 +5,11 @@ import com.domain.wechat.NpWxUser
 import com.domain.wechat.WxGroup
 import com.domain.wechat.WxUser
 import com.util.MysqlUtil
+import com.util.WxUtils
 import grails.transaction.Transactional
-import wxapi.NpWxUserUpdateJob
+import wxapi.NpWxUseMoveGroupJob
+import wxapi.NpWxUserSyncJob
+import wxapi.TestCronJob
 
 @Transactional(readOnly = true)
 class WxController {
@@ -119,7 +122,7 @@ class WxController {
     }
 
     def job() {
-        NpWxUserUpdateJob.triggerNow()
+        NpWxUseMoveGroupJob.triggerNow()
         render("job")
     }
 
@@ -134,6 +137,20 @@ class WxController {
         wxGroupService.moveToOldGroup(apiAccount, apiAccount.apiToken.accessToken)
         render("moveToOldGroup")
     }
+
+    def test() {
+        NpWxUserSyncJob.triggerNow()
+        render("NpWxUserSyncJob.triggerNow")
+    }
+//
+//    def test1() {
+//        def apiAccount = ApiAccount.load(params.account)
+//        def map = [:]
+//        map.put("sort", "openid")
+//        def wxUser = WxUser.first(map)
+//        wxSyncUtils.getWxUsers(apiAccount, wxUser.openid)
+//        render(wxUser.openid)
+//    }
 
 
 }

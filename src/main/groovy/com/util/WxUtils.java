@@ -248,7 +248,7 @@ public class WxUtils {
                 e2.printStackTrace();
             }
         }
-        log.info("RESULT:" + result);
+        log.debug("RESULT:" + result);
         return result;
 
     }

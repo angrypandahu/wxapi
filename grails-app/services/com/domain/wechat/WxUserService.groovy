@@ -10,7 +10,6 @@ import org.grails.web.json.JSONObject
 class WxUserService {
 
 
-
     int getWxUserInfo(ApiAccount apiAccount) {
         int limit = 10000;
         Integer total = WxUser.countByApiAccount(apiAccount)
@@ -61,18 +60,30 @@ class WxUserService {
         log.debug("#########batchSave[total:" + wxUserList.size() + ",time:" + time + "]")
     }
 
-    def batchUpdate(List<WxUser> wxUserList) {
+    def batchUpdate(List<WxUser> wxUserList, boolean withNewTransaction) {
         def begin = new Date()
         log.debug("#########batchUpdate##begin->" + begin)
-        WxUser.withNewTransaction {
+        if (withNewTransaction) {
+            WxUser.withNewTransaction {
+                wxUserList?.each {
+                    it.save(flush: true)
+                }
+            }
+        } else {
             wxUserList?.each {
-                it.save(flush: true)
+                it.save()
             }
         }
+
+
         def end = new Date()
         def time = (end.getTime() - begin.getTime()) / 1000
         log.debug("#########batchUpdate##end->" + end)
         log.debug("#########batchUpdate[total:" + wxUserList.size() + ",time:" + time + "]")
+    }
+
+    def batchUpdate(List<WxUser> wxUserList) {
+        batchUpdate(wxUserList, false)
     }
 
     def userInfo(JSONObject jSONObject, WxUser wxUser) {
@@ -97,9 +108,14 @@ class WxUserService {
                     wxUser.setWxGroup(wxGroup)
                 }
                 def array = jSONObject.getJSONArray("tagid_list")
-                if (array?.size() > 0) {
-                    println "tagid_list:" + array
+                def list = []
+                if (array.size() > 0) {
+                    array.each {
+                        list.add(it.toString())
+                    }
+                    wxUser.setTagidlist(list as String[])
                 }
+
 //                wxUser.save(flush: true)
             }
         }

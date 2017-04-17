@@ -45,7 +45,7 @@ public abstract class AbstractBatch {
 
     private boolean threadDoWork(int startNum, int threadNum) {
         java.util.Date begin = new java.util.Date();
-        log.info("Main Thread Now:" + begin);
+        log.debug("Main Thread Now:" + begin);
         final CountDownLatch mStartSignal = new CountDownLatch(1);
         final CountDownLatch mDoneSignal = new CountDownLatch(threadNum);
 
@@ -60,11 +60,11 @@ public abstract class AbstractBatch {
         } catch (InterruptedException e) {
             log.info(e.getMessage());
         }
-        log.info("All workers have finished now.");
+        log.debug("All workers have finished now.");
         java.util.Date end = new java.util.Date();
-        log.info("Main Thread Now:" + end);
+        log.debug("Main Thread Now:" + end);
         long l = (end.getTime() - begin.getTime()) / 1000;
-        log.info("Total time: " + l);
+        log.debug("Total time: " + l);
         return true;
     }
 }

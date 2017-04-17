@@ -15,12 +15,14 @@ import java.util.concurrent.CountDownLatch;
 public class WxUserInfoThread extends AbstractThread {
     private List<WxUser> wxUserList;
     private WxUserService wxUserService;
+    private boolean withNewTransaction;
     private static final Log log = LogFactory.getLog(WxUserInfoThread.class);
 
-    public WxUserInfoThread(CountDownLatch mStartSignal, CountDownLatch mDoneSignal, int mThreadIndex, List<WxUser> wxUserList, WxUserService wxUserService) {
+    public WxUserInfoThread(CountDownLatch mStartSignal, CountDownLatch mDoneSignal, int mThreadIndex, List<WxUser> wxUserList, WxUserService wxUserService,boolean withNewTransaction) {
         super(mStartSignal, mDoneSignal, mThreadIndex);
         this.wxUserService = wxUserService;
         this.wxUserList = wxUserList;
+        this.withNewTransaction = withNewTransaction;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class WxUserInfoThread extends AbstractThread {
             JSONObject jSONObject = new JSONObject(userInfo);
             wxUserService.userInfo(jSONObject, wxUser);
         }
-        wxUserService.batchUpdate(wxUserList);
+        wxUserService.batchUpdate(wxUserList,withNewTransaction);
         log.info("WxUserInfoThread##############doWork##############End");
 
     }

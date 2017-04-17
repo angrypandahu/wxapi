@@ -4,35 +4,35 @@ import com.domain.api.ApiAccount
 import com.util.WxUtils
 import com.utils.DateUtils
 
-class NpWxUserUpdateJob {
-    def wxService
-    def wxSyncUtils
-    def wxGroupService
+class NpWxUserSyncJob {
     def npWxUserService
+    def wxSyncUtils
+    def wxService
+    def wxGroupService
+
     static triggers = {
-        cron name: 'NpWxUserUpdateTrigger', cronExpression: "0 0 0/3 * * ?"
+        cron name: 'NpWxUserSyncTrigger', cronExpression: "0 0 0/3 * * ?"
     }
 
     def execute() {
         try {
             def date = new Date()
-            println("NpWxUserUpdateJob->Start#####" + DateUtils.dateFormat_4.format(date))
+            println("NpWxUserSyncJob->Start#####" + DateUtils.dateFormat_4.format(date))
+            def token = wxService.npToken()
             def npApiAccount = ApiAccount.findByAppId(WxUtils.NP_WX_APP_ID)
-            def token = wxService.npToken(true)
             npWxUserService.batchSync()
+
             wxSyncUtils.getAllWxUsers(npApiAccount)
-            wxSyncUtils.getWxUserInfo(npApiAccount)
+
+            wxSyncUtils.getWxUserInfoNoThread(npApiAccount)
 
             wxGroupService.moveToOldGroup(npApiAccount, token)
+
             wxGroupService.moveToNewGroup(npApiAccount, token)
 
-            println("NpWxUserUpdateJob->End#####" + DateUtils.dateFormat_4.format(new Date()))
+            println("NpWxUserSyncJob->End#####" + DateUtils.dateFormat_4.format(new Date()))
         } catch (Exception e) {
             log.error(e.getMessage())
         }
-
-        // execute job
     }
-
-
 }

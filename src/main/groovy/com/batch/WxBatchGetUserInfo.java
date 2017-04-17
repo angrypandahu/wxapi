@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 public class WxBatchGetUserInfo extends AbstractBatch {
     private List<WxUser> wxUserList;
     private WxUserService wxUserService;
+    private boolean withNewTransaction;
 
     private List<WxUser> getThreadList(List<WxUser> totalList, int start, int limitNum) {
         List<WxUser> threadList = new ArrayList<>();
@@ -24,15 +25,16 @@ public class WxBatchGetUserInfo extends AbstractBatch {
     }
 
 
-    public WxBatchGetUserInfo(List<WxUser> wxUserList, WxUserService wxUserService) {
+    public WxBatchGetUserInfo(List<WxUser> wxUserList, WxUserService wxUserService,boolean withNewTransaction) {
         this.wxUserList = wxUserList;
         this.wxUserService = wxUserService;
+        this.withNewTransaction = withNewTransaction;
     }
 
     @Override
     public void initThreadList(CountDownLatch mStartSignal, CountDownLatch mDoneSignal, int threadIndex, int startNum, int limitNum) {
         List<WxUser> threadList = getThreadList(wxUserList, (startNum + threadIndex) * getLimitNum(), getLimitNum());
-        WxUserInfoThread wxUserInfoThread = new WxUserInfoThread(mStartSignal, mDoneSignal, threadIndex, threadList, wxUserService);
+        WxUserInfoThread wxUserInfoThread = new WxUserInfoThread(mStartSignal, mDoneSignal, threadIndex, threadList, wxUserService,withNewTransaction);
         wxUserInfoThread.start();
     }
 }

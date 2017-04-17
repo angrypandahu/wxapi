@@ -38,10 +38,10 @@ class WxSyncUtils {
                     list.add(wxUser)
                 }
                 new WxBatchGetUser(list, wxUserService).batch(list.size())
-                def detachedCriteria = WxUser.where {
-                    (apiAccount == apiAccount) && (openid in openidArray)
-                }
-                detachedCriteria.updateAll(isDelete: false)
+//                def detachedCriteria = WxUser.where {
+//                    (apiAccount == apiAccount) && (openid in openidArray)
+//                }
+//                detachedCriteria.updateAll(isDelete: false)
                 if (nextOpenId != null && nextOpenId != "") {
                     getWxUsers(apiAccount, nextOpenId)
                 }
@@ -51,7 +51,7 @@ class WxSyncUtils {
         return count
     }
 
-    def getWxUserInfo(ApiAccount apiAccount) {
+    def getWxUserInfo(ApiAccount apiAccount, boolean withNewTransaction) {
         int limit = 1000;
         Integer total = WxUser.countByApiAccountAndUnionidIsNull(apiAccount)
         int page = total / limit;
@@ -64,17 +64,39 @@ class WxSyncUtils {
             map.put("offset", limit * i);
             map.put("sort", "id");
             List<WxUser> wxUserList = WxUser.findAllByApiAccountAndUnionidIsNull(apiAccount, map);
-            new WxBatchGetUserInfo(wxUserList, wxUserService).batch(wxUserList.size())
+            new WxBatchGetUserInfo(wxUserList, wxUserService, withNewTransaction).batch(wxUserList.size())
         }
     }
 
     def getAllWxUsers(ApiAccount apiAccount) {
-        def criteria = WxUser.where {
-            apiAccount == apiAccount
-        }
-        criteria.updateAll(isDelete: true)
+//        def criteria = WxUser.where {
+//            apiAccount == apiAccount
+//        }
+//        criteria.updateAll(isDelete: true)
 
         getWxUsers(apiAccount, "")
+    }
+
+    def getWxUserInfoNoThread(ApiAccount apiAccount) {
+        int limit = 1000;
+        Integer total = WxUser.countByApiAccountAndUnionidIsNull(apiAccount)
+        int page = total / limit;
+        if (total % limit > 0) {
+            page++;
+        }
+        for (int i = 0; i < page; i++) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("max", limit);
+            map.put("offset", limit * i);
+            map.put("sort", "id");
+            List<WxUser> wxUserList = WxUser.findAllByApiAccountAndUnionidIsNull(apiAccount, map);
+            for (WxUser wxUser : wxUserList) {
+                String userInfo = WxUtils.userInfo(wxUser);
+                JSONObject jSONObject = new JSONObject(userInfo);
+                wxUserService.userInfo(jSONObject, wxUser);
+            }
+            wxUserService.batchUpdate(wxUserList);
+        }
     }
 
 

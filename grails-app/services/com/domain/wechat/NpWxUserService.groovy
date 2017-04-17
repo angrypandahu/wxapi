@@ -1,6 +1,5 @@
 package com.domain.wechat
 
-import com.domain.api.ApiAccount
 import com.util.MysqlUtil
 import grails.transaction.Transactional
 
@@ -35,6 +34,7 @@ class NpWxUserService {
             npWxUser.setCreatedAt(it.created_at)
             needToSave.add(npWxUser)
         }
+        log.info("###batchSync->needToSave.size=" + needToSave.size())
         batchSave(needToSave)
         log.info("###batchSync->end")
     }
