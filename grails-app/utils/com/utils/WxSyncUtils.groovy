@@ -20,7 +20,7 @@ class WxSyncUtils {
 
 
     int getWxUsers(ApiAccount apiAccount, String nextOpenId) {
-
+        wxService.token(apiAccount)
         String users = wxService.userGet(apiAccount, nextOpenId)
         int count = 0
         if (users != null && users != "") {
@@ -58,14 +58,21 @@ class WxSyncUtils {
         if (total % limit > 0) {
             page++;
         }
+        List<List> batchList = new ArrayList<>()
         for (int i = 0; i < page; i++) {
             Map<String, Object> map = new HashMap<>();
             map.put("max", limit);
             map.put("offset", limit * i);
             map.put("sort", "id");
             List<WxUser> wxUserList = WxUser.findAllByApiAccountAndUnionidIsNull(apiAccount, map);
+            batchList.add(wxUserList)
+        }
+        wxService.token(apiAccount)
+        batchList?.each { wxUserList ->
             new WxBatchGetUserInfo(wxUserList, wxUserService, withNewTransaction).batch(wxUserList.size())
         }
+
+
     }
 
     def getAllWxUsers(ApiAccount apiAccount) {
@@ -84,6 +91,7 @@ class WxSyncUtils {
         if (total % limit > 0) {
             page++;
         }
+        List<List> batchList = new ArrayList<>()
         for (int i = 0; i < page; i++) {
             Map<String, Object> map = new HashMap<>();
             map.put("max", limit);
@@ -91,10 +99,14 @@ class WxSyncUtils {
             map.put("sort", "id");
             List<WxUser> wxUserList = WxUser.findAllByApiAccountAndUnionidIsNull(apiAccount, map);
             for (WxUser wxUser : wxUserList) {
-                String userInfo = WxUtils.userInfo(wxUser);
+                String userInfo = wxUserService.userInfo(wxUser);
                 JSONObject jSONObject = new JSONObject(userInfo);
                 wxUserService.userInfo(jSONObject, wxUser);
             }
+            batchList.add(wxUserList)
+
+        }
+        batchList.each { wxUserList ->
             wxUserService.batchUpdate(wxUserList);
         }
     }

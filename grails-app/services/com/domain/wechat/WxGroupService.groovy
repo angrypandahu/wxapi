@@ -12,6 +12,7 @@ class WxGroupService {
 
     def getWxGroup(ApiAccount apiAccount) {
         if (apiAccount) {
+            wxService.token(apiAccount)
             def wxParam = [:]
             wxParam.put("access_token", apiAccount.apiToken.accessToken);
             def groupGet = WxUtils.doAll(WxUtils.WX_GROUP_GET_URL, wxParam, WxUtils.GET)

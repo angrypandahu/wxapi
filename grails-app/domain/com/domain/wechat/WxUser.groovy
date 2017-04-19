@@ -28,19 +28,19 @@ class WxUser extends BaseDomain {
 
     String getStringNickname() {
         if (nickname)
-            return new String(nickname,"utf-8")
+            return new String(nickname, "utf-8")
         else return ""
     }
 
     String getStringProvince() {
         if (province)
-            return new String(province,"utf-8")
+            return new String(province, "utf-8")
         else return ""
     }
 
     String getStringCity() {
         if (city)
-            return new String(city,"utf-8")
+            return new String(city, "utf-8")
         else return ""
     }
 

@@ -29,7 +29,7 @@ public class WxUserInfoThread extends AbstractThread {
     public void doWork() {
         log.info("WxUserInfoThread##############doWork##############Start->wxUserList.size=" + wxUserList.size());
         for (WxUser wxUser : wxUserList) {
-            String userInfo = WxUtils.userInfo(wxUser);
+            String userInfo = wxUserService.userInfo(wxUser);
             JSONObject jSONObject = new JSONObject(userInfo);
             wxUserService.userInfo(jSONObject, wxUser);
         }

@@ -38,18 +38,6 @@ public class WxUtils {
     private static final Log log = LogFactory.getLog(WxUtils.class);
 
 
-    public static String userInfo(WxUser wxUser) {
-        Map<String, String> wxParam = new HashMap<>();
-        wxParam.put("access_token", wxUser.getApiAccount().getApiToken().getAccessToken());
-        wxParam.put("openid", wxUser.getOpenid());
-        String doAll = null;
-        try {
-            doAll = WxUtils.doAll(WxUtils.WX_USER_INFO_URL, wxParam, WxUtils.GET);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return doAll;
-    }
 
     private static class TrustAnyTrustManager implements X509TrustManager {
 

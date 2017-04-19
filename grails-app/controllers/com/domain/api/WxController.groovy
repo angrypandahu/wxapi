@@ -58,7 +58,7 @@ class WxController {
     def getWxUserInfo() {
         def begin = new Date()
         def apiAccount = ApiAccount.load(params.account)
-        wxSyncUtils.getWxUserInfo(apiAccount)
+        wxSyncUtils.getWxUserInfo(apiAccount,true)
         def end = new Date()
         def i = (end.getTime() - begin.getTime()) / 1000
         render("耗时:" + i + "秒")

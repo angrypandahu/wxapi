@@ -10,24 +10,6 @@ import org.grails.web.json.JSONObject
 class WxUserService {
 
 
-    int getWxUserInfo(ApiAccount apiAccount) {
-        int limit = 10000;
-        Integer total = WxUser.countByApiAccount(apiAccount)
-        int page = total / limit;
-        if (total % limit > 0) {
-            page++;
-        }
-        for (int i = 0; i < page; i++) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("max", limit);
-            map.put("offset", limit * i);
-            map.put("sort", "id");
-            map.put("apiAccount", apiAccount);
-            List<WxUser> wxUserList = WxUser.list(map);
-            new WxBatchGetUserInfo(wxUserList, this).batch(wxUserList.size())
-        }
-        return 0;
-    }
 
     def mergeSave(List<WxUser> wxUserList, List<WxUser> dbList) {
         List<WxUser> notInDb = new ArrayList<>()
@@ -84,6 +66,19 @@ class WxUserService {
 
     def batchUpdate(List<WxUser> wxUserList) {
         batchUpdate(wxUserList, false)
+    }
+
+    String userInfo(WxUser wxUser) {
+        Map<String, String> wxParam = new HashMap<>();
+        wxParam.put("access_token", wxUser.getApiAccount().getApiToken().getAccessToken());
+        wxParam.put("openid", wxUser.getOpenid());
+        String doAll = null;
+        try {
+            doAll = WxUtils.doAll(WxUtils.WX_USER_INFO_URL, wxParam, WxUtils.GET);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return doAll;
     }
 
     def userInfo(JSONObject jSONObject, WxUser wxUser) {
