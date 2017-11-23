@@ -114,7 +114,7 @@ class WxGroupService {
 
     int batchMove(WxGroup fromGroup, WxGroup toGroup, String accessToken) {
         int limit = 50;
-        Integer total = WxUser.countByWxGroup(fromGroup)
+        Integer total = WxUser.countByWxGroupAndIsDelete(fromGroup,false)
         int page = total / limit;
         if (total % limit > 0) {
             page++;
@@ -125,7 +125,7 @@ class WxGroupService {
             map.put("max", limit);
             map.put("offset", limit * i);
             map.put("sort", "id");
-            List<WxUser> wxUserList = WxUser.findAllByWxGroup(fromGroup, map);
+            List<WxUser> wxUserList = WxUser.findAllByWxGroupAndIsDelete(fromGroup,false,map);
             successIds.addAll(wxGroup50UsersUpdate(wxUserList, toGroup, accessToken))
         }
         if (successIds.size() > 0) {
@@ -147,7 +147,7 @@ class WxGroupService {
     def moveToOldGroup(ApiAccount apiAccount,String token) {
         def openidList = NpWxUser.findAll().openid
         def wxGroup = WxGroup.findByNameAndApiAccount("老用户", apiAccount)
-        def wxUsers = WxUser.findAllByUnionidInListAndWxGroupNotEqual(openidList, wxGroup)
+        def wxUsers = WxUser.findAllByOpenidInListAndWxGroupNotEqual(openidList, wxGroup)
         log.info("#####moveToOldGroup.wxUsers.size=" + wxUsers.size())
         wxGroupUsersUpdate(wxUsers, wxGroup, token)
     }

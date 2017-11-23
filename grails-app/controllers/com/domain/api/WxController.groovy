@@ -38,7 +38,7 @@ class WxController {
 
     def token() {
         def apiAccount = ApiAccount.load(params.account)
-        render(wxService.token(apiAccount))
+        render(wxService.npToken())
     }
 
 

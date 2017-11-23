@@ -2,6 +2,7 @@ package com.domain.api
 
 import com.util.WxUtils
 import com.utils.DateUtils
+import com.utils.MD5Utils
 import grails.transaction.Transactional
 import org.grails.web.json.JSONObject
 
@@ -18,7 +19,10 @@ class WxService {
         try {
             if (apiAccount) {
                 def wxParam = [:]
-                def tokenStr = WxUtils.doHttp(WxUtils.NP_GET_TOKEN_URL, wxParam, WxUtils.GET, null)
+                String pars = "timestamp=" + System.currentTimeMillis();
+                String sign = MD5Utils.md5sign(pars);
+                String finalUrl = WxUtils.NP_GET_TOKEN_URL + "?" + pars + "&sign=" + sign;
+                def tokenStr = WxUtils.doHttp(finalUrl, wxParam, WxUtils.GET, null)
                 def jSONObject = new JSONObject(tokenStr)
                 if (jSONObject.has("data")) {
                     def dataJSON = jSONObject.getJSONObject("data")
