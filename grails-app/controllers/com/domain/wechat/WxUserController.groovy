@@ -1,6 +1,7 @@
 package com.domain.wechat
 
 import com.domain.auth.User
+import com.util.WxUtils
 import grails.transaction.Transactional
 import org.grails.plugins.filterpane.FilterPaneUtils
 import org.springframework.http.HttpStatus
@@ -41,6 +42,18 @@ class WxUserController {
         }
         return false
 
+    }
+
+    def testWx() {
+        Map<String, String> hashMap = new HashMap<>();
+        def wxParam = [:]
+        wxParam.put("appid", "wxa44fc571f57812a9");
+        wxParam.put("secret", "ff2c92512e8cfeb4003883eae6ad595b");
+        wxParam.put("grant_type", "client_credential");
+        def url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
+        hashMap.put("corpid", "wxa44fc571f57812a9");
+        hashMap.put("corpsecret", "ff2c92512e8cfeb4003883eae6ad595b");
+        render WxUtils.doAll(WxUtils.WX_GET_TOKEN_URL, wxParam, WxUtils.GET);
     }
 
     def index() {

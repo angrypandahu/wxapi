@@ -45,10 +45,10 @@ class WxController {
     def getWxUsers() {
         def begin = new Date()
         def apiAccount = ApiAccount.load(params.account)
-        def criteria = WxUser.where {
-            apiAccount == apiAccount
-        }
-        criteria.updateAll(isDelete: true)
+//        def criteria = WxUser.where {
+//            apiAccount == apiAccount
+//        }
+//        criteria.updateAll(isDelete: true)
         wxSyncUtils.getWxUsers(apiAccount, "")
         def end = new Date()
         def i = (end.getTime() - begin.getTime()) / 1000

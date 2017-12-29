@@ -38,6 +38,13 @@ public class WxUtils {
     private static final Log log = LogFactory.getLog(WxUtils.class);
 
 
+    public static void main(String[] args) throws Exception {
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.put("appid", "YOUR_APP_ID");
+        hashMap.put("secret", "YOUR_SECRET");
+        hashMap.put("grant_type", "client_credential");
+        doAll(WX_GET_TOKEN_URL,hashMap,GET);
+    }
 
     private static class TrustAnyTrustManager implements X509TrustManager {
 

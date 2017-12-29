@@ -1,14 +1,11 @@
 package com.domain.wechat
 
-import com.batch.WxBatchGetUserInfo
-import com.domain.api.ApiAccount
 import com.util.WxUtils
 import grails.transaction.Transactional
 import org.grails.web.json.JSONObject
 
 @Transactional
 class WxUserService {
-
 
 
     def mergeSave(List<WxUser> wxUserList, List<WxUser> dbList) {
@@ -96,6 +93,7 @@ class WxUserService {
                 if (jSONObject.has("subscribe_time")) wxUser.setSubscribetime(jSONObject.getLong("subscribe_time"))
                 if (jSONObject.has("unionid")) wxUser.setUnionid(jSONObject.getString("unionid"))
                 if (jSONObject.has("remark")) wxUser.setRemark(jSONObject.getString("remark"))
+                wxUser.setIsDelete(false);
                 if (jSONObject.has("groupid")) {
                     def groupid = jSONObject.getInt("groupid")
                     wxUser.setGroupid(groupid)
